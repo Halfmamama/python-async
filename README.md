@@ -1,4 +1,4 @@
-# Python Async Showcase Portfolio
+# Python Async Portfolio
 
 Welcome to my public portfolio showcase, demonstrating production-grade asynchronous Python engineering, automated web scraping, and resilience toolkits.
 
@@ -16,7 +16,7 @@ This repository highlights my expertise in building high-performance, asynchrono
 
 ---
 
-# Портфолио Python Async Showcase
+# Портфолио Python Async
 
 Добро пожаловать в моё публичное портфолио, демонстрирующее примеры асинхронной разработки на Python, веб-парсинга и отказоустойчивых инструментов автоматизации.
 

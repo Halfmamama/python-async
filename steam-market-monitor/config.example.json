@@ -1,0 +1,75 @@
+{
+  "telegram_token": "",
+  "chat_id": null,
+  "currency": 5,
+  "country": "RU",
+  "language": "russian",
+  "currency_symbol": "₽",
+  "poll_cycle_seconds": 150,
+  "request_delay_seconds": 8,
+  "request_delay_jitter_seconds": 4,
+  "notify_on_new_item": true,
+  "notify_on_count_increase": false,
+  "notify_on_price_drop": false,
+  "send_images": true,
+  "fetch_strategy": "auto",
+  "convert_to_rub": true,
+  "fx_refresh_hours": 6,
+  "market_action_type": "ZFJAHYDA:SearchItemDescriptions",
+  "searches": [
+    {
+      "name": "Strange Primary — horns violet",
+      "query": "horns violet",
+      "quality": "strange",
+      "type": "primary",
+      "url": "https://steamcommunity.com/market/search?category_440_Quality=tag_strange&category_440_Type=tag_primary&appid=440&q=horns+violet&descriptions=1&sort=3&dir=1"
+    },
+    {
+      "name": "Strange Primary — horns team",
+      "query": "horns team",
+      "quality": "strange",
+      "type": "primary",
+      "url": "https://steamcommunity.com/market/search?category_440_Quality=tag_strange&category_440_Type=tag_primary&appid=440&q=horns+team&descriptions=1&sort=3&dir=1"
+    },
+    {
+      "name": "Strange Primary — horns hot",
+      "query": "horns hot",
+      "quality": "strange",
+      "type": "primary",
+      "url": "https://steamcommunity.com/market/search?category_440_Quality=tag_strange&category_440_Type=tag_primary&appid=440&q=horns+hot&descriptions=1&sort=3&dir=1"
+    },
+    {
+      "name": "Strange Primary — tornado hot",
+      "query": "tornado hot",
+      "quality": "strange",
+      "type": "primary",
+      "url": "https://steamcommunity.com/market/search?category_440_Quality=tag_strange&category_440_Type=tag_primary&appid=440&q=tornado+hot&descriptions=1&sort=3&dir=1"
+    },
+    {
+      "name": "Strange Primary — tornado violet",
+      "query": "tornado violet",
+      "quality": "strange",
+      "type": "primary",
+      "url": "https://steamcommunity.com/market/search?category_440_Quality=tag_strange&category_440_Type=tag_primary&appid=440&q=tornado+violet&descriptions=1&sort=3&dir=1"
+    },
+    {
+      "name": "Strange Primary — tornado team",
+      "query": "tornado team",
+      "quality": "strange",
+      "type": "primary",
+      "url": "https://steamcommunity.com/market/search?category_440_Quality=tag_strange&category_440_Type=tag_primary&appid=440&q=tornado+team&descriptions=1&sort=3&dir=1"
+    },
+    {
+      "name": "Melee — kunai horns",
+      "query": "kunai horns",
+      "type": "melee",
+      "url": "https://steamcommunity.com/market/search?category_440_Type=tag_melee&appid=440&q=kunai+horns&descriptions=1&sort=3&dir=1"
+    },
+    {
+      "name": "Melee — kunai tornado",
+      "query": "kunai tornado",
+      "type": "melee",
+      "url": "https://steamcommunity.com/market/search?category_440_Type=tag_melee&appid=440&q=kunai+tornado&descriptions=1&sort=3&dir=1"
+    }
+  ]
+}

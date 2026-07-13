@@ -41,6 +41,7 @@ Desktop.ini
 
 # Project specific ignores
 config.json
+config.py
 state.json
 logs/
 *.exe

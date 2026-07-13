@@ -473,18 +473,18 @@ def check_canary(cfg: Dict[str, Any]) -> bool:
             total: int = int(data.get("total_count", 0))
             if total > 0:
                 logger.info(
-                    f"✅ Канарейка OK: total_count={total} (запрос '{canary_query}')"
+                    f"[OK] Канарейка OK: total_count={total} (запрос '{canary_query}')"
                 )
                 return True
         except SteamRateLimited:
-            logger.warning("⚠️ Канарейка: Steam Rate Limit (429). Попробуем позже.")
+            logger.warning("[WARN] Канарейка: Steam Rate Limit (429). Попробуем позже.")
             return False
         except Exception as exc:
-            logger.error(f"⚠️ Канарейка: исключение — {exc}")
+            logger.error(f"[WARN] Канарейка: исключение — {exc}")
             return False
 
     logger.warning(
-        "⚠️ Канарейка: total_count=0. "
+        "[WARN] Канарейка: total_count=0. "
         "Проблема сети/эндпоинта/заголовков или устаревший market_action_type в config.json."
     )
     return False

@@ -79,7 +79,7 @@ def main() -> None:
     """Main application loop and configuration initializer."""
     setup_logging()
 
-    logger.info("Запуск Steam Market монитора... 🚀")
+    logger.info("Запуск Steam Market монитора... [START]")
 
     config = load_config()
     logger.info("Конфигурация успешно загружена.")
@@ -103,7 +103,7 @@ def main() -> None:
     logger.info("Проверка канарейки Steam API...")
     if not steam_client.check_canary(config):
         canary_warn = (
-            "⚠️ Предупреждение: Стартовая проверка канарейки Steam не прошла! "
+            "[WARN] Предупреждение: Стартовая проверка канарейки Steam не прошла! "
             "Возможно изменился market_action_type или проблемы с сетью."
         )
         logger.warning(canary_warn)
@@ -113,7 +113,7 @@ def main() -> None:
             pass
 
     cycle_sec = config.get("poll_cycle_seconds", 150)
-    startup_msg = f"✅ Мониторинг запущен. Слежу за {len(searches)} ссылками. Цикл ~{cycle_sec} сек."
+    startup_msg = f"[OK] Мониторинг запущен. Слежу за {len(searches)} ссылками. Цикл ~{cycle_sec} сек."
     telegram_notifier.send_message(token, chat_id, startup_msg)
     logger.info(startup_msg)
 
@@ -194,7 +194,7 @@ def main() -> None:
                     wait_mins = backoff_minutes[min(backoff_index, len(backoff_minutes) - 1)]
                     backoff_index += 1
 
-                    msg = f"⚠️ Steam лимит, пауза {wait_mins} мин"
+                    msg = f"[WARN] Steam лимит, пауза {wait_mins} мин"
                     logger.warning(msg)
                     telegram_notifier.send_message(token, chat_id, msg)
 
@@ -227,7 +227,7 @@ def main() -> None:
                 is_baseline = False
 
             poll_cycle = float(config.get("poll_cycle_seconds", 150))
-            logger.info(f"Цикл завершен. Ожидание следующего цикла опроса {poll_cycle} сек... 😴")
+            logger.info(f"Цикл завершен. Ожидание следующего цикла опроса {poll_cycle} сек... ")
             time.sleep(poll_cycle)
 
     except KeyboardInterrupt:

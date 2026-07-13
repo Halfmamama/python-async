@@ -59,7 +59,7 @@ async def connect_wallet_if_needed(page, context, name):
         for selector in connect_selectors:
             try:
                 if await selector.is_visible(timeout=3_000):
-                    logging.info(f"[{name}] 🦊 Кошелёк не подключен, подключаю...")
+                    logging.info(f"[{name}]  Кошелёк не подключен, подключаю...")
                     await human_pause(0.5, 1.5)
                     await human_click(selector, name, "Connect wallet")
                     await human_pause(1.0, 2.5)
@@ -75,16 +75,16 @@ async def connect_wallet_if_needed(page, context, name):
                     )
                     await human_pause(2.0, 4.0)
 
-                    logging.info(f"[{name}] 🦊 Кошелёк подключен")
+                    logging.info(f"[{name}]  Кошелёк подключен")
                     return True
             except TimeoutError:
                 continue
 
-        logging.info(f"[{name}] ℹ️ Кошелёк уже подключен")
+        logging.info(f"[{name}] [INFO] Кошелёк уже подключен")
         return True
 
     except Exception as e:
-        logging.warning(f"[{name}] ⚠️ Ошибка при подключении кошелька: {e}")
+        logging.warning(f"[{name}] [WARN] Ошибка при подключении кошелька: {e}")
         return False
 
 
@@ -107,7 +107,7 @@ async def do_liquidity(page, context, name, primary_token="DAI", second_token=No
             ]
             second_token = random.choice(second_options)
 
-        logging.info(f"[{name}] 💧 Пара: {primary_token}/{second_token}")
+        logging.info(f"[{name}]  Пара: {primary_token}/{second_token}")
 
         # --- 2. Navigate to Liquidity ---
         await human_pause(0.5, 1.5)
@@ -115,7 +115,7 @@ async def do_liquidity(page, context, name, primary_token="DAI", second_token=No
         liq_link = get_liquidity_link(page)
         await human_click(liq_link, name, "Liquidity link")
         await human_pause(2.0, 4.0)
-        logging.info(f"[{name}] 💧 Перешёл на Liquidity")
+        logging.info(f"[{name}]  Перешёл на Liquidity")
 
         # --- 3. Create new position ---
         create_btn = get_create_position_button(page)
@@ -125,7 +125,7 @@ async def do_liquidity(page, context, name, primary_token="DAI", second_token=No
             await human_click(create_btn, name, "New position link")
             await human_pause(1.5, 3.0)
         except TimeoutError:
-            logging.error(f"[{name}] ❌ 'New' link не найдена")
+            logging.error(f"[{name}] [FAIL] 'New' link не найдена")
             return False
 
         # --- 4. Select first token ---
@@ -145,7 +145,7 @@ async def do_liquidity(page, context, name, primary_token="DAI", second_token=No
             await select_token_in_dialog(page, name, primary_token)
             await human_pause(1.0, 2.5)
         except TimeoutError:
-            logging.warning(f"[{name}] ⚠️ Не удалось выбрать первый токен")
+            logging.warning(f"[{name}] [WARN] Не удалось выбрать первый токен")
             return False
 
         # --- 5. Select second token ---
@@ -165,7 +165,7 @@ async def do_liquidity(page, context, name, primary_token="DAI", second_token=No
             await select_token_in_dialog(page, name, second_token)
             await human_pause(1.0, 2.5)
         except TimeoutError:
-            logging.warning(f"[{name}] ⚠️ Не удалось выбрать второй токен")
+            logging.warning(f"[{name}] [WARN] Не удалось выбрать второй токен")
             return False
 
         # --- 6. Add Liquidity ---
@@ -177,7 +177,7 @@ async def do_liquidity(page, context, name, primary_token="DAI", second_token=No
             await human_click(add_liq_btn, name, "Add Liquidity")
             await human_pause(1.5, 3.0)
         except TimeoutError:
-            logging.warning(f"[{name}] ⚠️ 'Add Liquidity' не найдена")
+            logging.warning(f"[{name}] [WARN] 'Add Liquidity' не найдена")
             return False
 
         # --- 7. Fill amount (посимвольно) ---
@@ -191,10 +191,10 @@ async def do_liquidity(page, context, name, primary_token="DAI", second_token=No
             else:
                 liq_amt = round(random.uniform(LIQ_DAI_MIN, LIQ_DAI_MAX), 2)
             await human_type(page, str(liq_amt), field=amount_input)
-            logging.info(f"[{name}] 💧 Ввёл сумму: {liq_amt} {primary_token}")
+            logging.info(f"[{name}]  Ввёл сумму: {liq_amt} {primary_token}")
             await human_pause(1.0, 2.5)
         except Exception as e:
-            logging.warning(f"[{name}] ⚠️ Не удалось ввести сумму: {e}")
+            logging.warning(f"[{name}] [WARN] Не удалось ввести сумму: {e}")
             return False
 
         # --- 8. Click Review (навигационная кнопка, НЕ MetaMask) ---
@@ -203,14 +203,14 @@ async def do_liquidity(page, context, name, primary_token="DAI", second_token=No
         try:
             await review_btn.wait_for(state="visible", timeout=15_000)
             await human_click(review_btn, name, "Review")
-            logging.info(f"[{name}] 👆 Нажал Review")
+            logging.info(f"[{name}]  Нажал Review")
             await human_pause(2.0, 4.0)
         except TimeoutError:
-            logging.warning(f"[{name}] ⚠️ Кнопка 'Review' не найдена за 15с")
+            logging.warning(f"[{name}] [WARN] Кнопка 'Review' не найдена за 15с")
             return False
 
         # --- 9. Подтверждаем транзакции через универсальный кликер ---
-        logging.info(f"[{name}] 🔄 Начинаю цепочку подтверждений для ликвидности {primary_token}/{second_token}")
+        logging.info(f"[{name}] [RETRY] Начинаю цепочку подтверждений для ликвидности {primary_token}/{second_token}")
         await human_pause(3.0, 5.0)  # NEW: увеличил паузу для обновления UI модалки
         
         from Nemesis.nemesis_orchestrator import POLICY
@@ -226,19 +226,19 @@ async def do_liquidity(page, context, name, primary_token="DAI", second_token=No
         )
 
         if total_steps == 0:
-            logging.warning(f"[{name}] ⚠️ Не удалось подтвердить ликвидность (нет шагов)")
+            logging.warning(f"[{name}] [WARN] Не удалось подтвердить ликвидность (нет шагов)")
             return False
 
         # Ожидание 30-40 секунд для гарантированного завершения, так как toast скрыт за модалкой
         wait_time = random.uniform(30.0, 40.0)
-        logging.info(f"[{name}] ⏳ Ожидаю {wait_time:.1f}с для завершения транзакции (обход бага UI)...")
+        logging.info(f"[{name}] [WAIT] Ожидаю {wait_time:.1f}с для завершения транзакции (обход бага UI)...")
         await asyncio.sleep(wait_time)
 
         logging.info(
-            f"[{name}] ✅ Liquidity position создана! ({total_steps} подтверждений)"
+            f"[{name}] [OK] Liquidity position создана! ({total_steps} подтверждений)"
         )
         return True
 
     except Exception as e:
-        logging.error(f"[{name}] ❌ Ошибка при Liquidity: {e}")
+        logging.error(f"[{name}] [FAIL] Ошибка при Liquidity: {e}")
         return False

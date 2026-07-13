@@ -43,8 +43,8 @@ async def human_click(locator, name="", label=""):
         await asyncio.sleep(random.uniform(0.1, 0.4))
         await locator.click()
         if label:
-            logging.info(f"[{name}] 👆 {label}")
+            logging.info(f"[{name}]  {label}")
     except Exception as e:
         if label:
-            logging.warning(f"[{name}] ⚠️ Ошибка клика '{label}': {e}")
+            logging.warning(f"[{name}] [WARN] Ошибка клика '{label}': {e}")
         raise

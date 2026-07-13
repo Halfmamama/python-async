@@ -46,7 +46,7 @@ async def run_nemesis_with_runner(
     nemesis_helpers.TARGET_ACCOUNTS = accounts
     nemesis_helpers.RUN_MODE = "ONLY"
     
-    logging.info(f"🚀 Nemesis adapter: mode={mode}, accounts={len(accounts)}, max_concurrent={max_concurrent}")
+    logging.info(f"[START] Nemesis adapter: mode={mode}, accounts={len(accounts)}, max_concurrent={max_concurrent}")
     
     # Вызываем оригинальную логику
     results = {}
@@ -65,6 +65,6 @@ async def run_nemesis_with_runner(
         ]
     )
     
-    logging.info(f"✅ Nemesis adapter completed: {len(results)} accounts processed")
+    logging.info(f"[OK] Nemesis adapter completed: {len(results)} accounts processed")
     
     return results

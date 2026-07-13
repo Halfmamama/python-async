@@ -132,7 +132,7 @@ async def _adjust_gas_in_metamask(mm_page, profile_name, gas_limit):
     """
     try:
         logging.info(
-            f"[{profile_name}] ⛽ Редактирование gas limit → {gas_limit:,}"
+            f"[{profile_name}]  Редактирование gas limit → {gas_limit:,}"
         )
 
         # Шаг 1: Кликаем на gas fee display
@@ -155,7 +155,7 @@ async def _adjust_gas_in_metamask(mm_page, profile_name, gas_limit):
             try:
                 if await sel.first.is_visible(timeout=2_000):
                     gas_fee_btn = sel.first
-                    logging.debug(f"[{profile_name}] ⛽ Gas fee кнопка найдена")
+                    logging.debug(f"[{profile_name}]  Gas fee кнопка найдена")
                     break
             except Exception:
                 continue
@@ -173,7 +173,7 @@ async def _adjust_gas_in_metamask(mm_page, profile_name, gas_limit):
 
         if not gas_fee_btn:
             logging.warning(
-                f"[{profile_name}] ⛽ Не найдена кнопка gas fee в MetaMask, "
+                f"[{profile_name}]  Не найдена кнопка gas fee в MetaMask, "
                 f"пропускаю редактирование газа"
             )
             return False
@@ -204,10 +204,10 @@ async def _adjust_gas_in_metamask(mm_page, profile_name, gas_limit):
             await asyncio.sleep(random.uniform(0.3, 0.8))
             await advanced_btn.click()
             await asyncio.sleep(random.uniform(1.0, 2.0))
-            logging.debug(f"[{profile_name}] ⛽ Переключился на Advanced")
+            logging.debug(f"[{profile_name}]  Переключился на Advanced")
         else:
             logging.debug(
-                f"[{profile_name}] ⛽ Advanced tab не найден — "
+                f"[{profile_name}]  Advanced tab не найден — "
                 f"возможно уже в режиме редактирования"
             )
 
@@ -231,7 +231,7 @@ async def _adjust_gas_in_metamask(mm_page, profile_name, gas_limit):
                 sel = mm_page.locator(f"[data-testid='{testid}']")
                 if await sel.is_visible(timeout=1_000):
                     gas_limit_input = sel
-                    logging.debug(f"[{profile_name}] ⛽ Gas limit input найден через data-testid")
+                    logging.debug(f"[{profile_name}]  Gas limit input найден через data-testid")
                     break
             except Exception:
                 continue
@@ -254,7 +254,7 @@ async def _adjust_gas_in_metamask(mm_page, profile_name, gas_limit):
                         if await input_in_parent.is_visible(timeout=1_000):
                             gas_limit_input = input_in_parent
                             logging.debug(
-                                f"[{profile_name}] ⛽ Gas limit input найден через label"
+                                f"[{profile_name}]  Gas limit input найден через label"
                             )
                             break
             except Exception:
@@ -272,7 +272,7 @@ async def _adjust_gas_in_metamask(mm_page, profile_name, gas_limit):
                     # Первый input = gas limit, второй = max priority fee
                     gas_limit_input = all_inputs.first
                     logging.debug(
-                        f"[{profile_name}] ⛽ Gas limit input найден "
+                        f"[{profile_name}]  Gas limit input найден "
                         f"(первый number input из {count})"
                     )
             except Exception:
@@ -280,7 +280,7 @@ async def _adjust_gas_in_metamask(mm_page, profile_name, gas_limit):
 
         if not gas_limit_input:
             logging.warning(
-                f"[{profile_name}] ⛽ Не найден input для gas limit, "
+                f"[{profile_name}]  Не найден input для gas limit, "
                 f"пропускаю редактирование"
             )
             # Закрываем gas editing modal
@@ -310,7 +310,7 @@ async def _adjust_gas_in_metamask(mm_page, profile_name, gas_limit):
         await asyncio.sleep(random.uniform(0.5, 1.0))
 
         logging.info(
-            f"[{profile_name}] ⛽ Gas limit установлен: {gas_limit:,}"
+            f"[{profile_name}]  Gas limit установлен: {gas_limit:,}"
         )
 
         # Шаг 4: Сохраняем
@@ -326,14 +326,14 @@ async def _adjust_gas_in_metamask(mm_page, profile_name, gas_limit):
                     await asyncio.sleep(random.uniform(0.3, 0.8))
                     await sel.first.click()
                     saved = True
-                    logging.debug(f"[{profile_name}] ⛽ Gas settings сохранены")
+                    logging.debug(f"[{profile_name}]  Gas settings сохранены")
                     break
             except Exception:
                 continue
 
         if not saved:
             logging.warning(
-                f"[{profile_name}] ⛽ Кнопка Save не найдена в gas editor"
+                f"[{profile_name}]  Кнопка Save не найдена в gas editor"
             )
             return False
 
@@ -342,7 +342,7 @@ async def _adjust_gas_in_metamask(mm_page, profile_name, gas_limit):
 
     except Exception as e:
         logging.warning(
-            f"[{profile_name}] ⛽ Ошибка при редактировании газа: {e}"
+            f"[{profile_name}]  Ошибка при редактировании газа: {e}"
         )
         return False
 
@@ -378,7 +378,7 @@ async def unlock_metamask(context, password, profile_name):
             await asyncio.sleep(1.0)
             
         if not page:
-            logging.warning(f"[{profile_name}] 🦊 MetaMask страница не найдена за 40с")
+            logging.warning(f"[{profile_name}]  MetaMask страница не найдена за 40с")
             return None
 
         await page.wait_for_load_state()
@@ -406,7 +406,7 @@ async def unlock_metamask(context, password, profile_name):
         print(f"[{profile_name}] MetaMask разблокирован")
         return page
     except Exception as e:
-        logging.error(f"[{profile_name}] 🦊 Ошибка при разблокировке MetaMask: {e}")
+        logging.error(f"[{profile_name}]  Ошибка при разблокировке MetaMask: {e}")
         return None
 
 
@@ -424,14 +424,14 @@ async def close_network_warning(page, profile_name):
 
         # Если такого элемента нет — считаем, что предупреждения нет
         if not await close_btn.count():
-            print(f"[{profile_name}] ℹ️ network warning не найден")
+            print(f"[{profile_name}] [INFO] network warning не найден")
             return False
 
         try:
             # Ждём, пока кнопка реально станет видимой
             await close_btn.first.wait_for(state="visible", timeout=10_000)
         except TimeoutError:
-            print(f"[{profile_name}] ⚠️ network warning не успел появиться / не виден")
+            print(f"[{profile_name}] [WARN] network warning не успел появиться / не виден")
             return False
 
         # Важно: НЕ используем evaluate (LavaMoat его режет), только стандартный click()
@@ -441,14 +441,14 @@ async def close_network_warning(page, profile_name):
             # Ждём, пока кнопка исчезнет/станет скрытой — сигнал, что баннер закрылся
             await close_btn.first.wait_for(state="hidden", timeout=10_000)
         except TimeoutError:
-            print(f"[{profile_name}] ⚠️ network warning не исчез после клика")
+            print(f"[{profile_name}] [WARN] network warning не исчез после клика")
             return False
 
-        print(f"[{profile_name}] ✅ network warning закрыт")
+        print(f"[{profile_name}] [OK] network warning закрыт")
         return True
 
     except Exception as e:
-        print(f"[{profile_name}] ⚠️ ошибка при закрытии network warning: {e}")
+        print(f"[{profile_name}] [WARN] ошибка при закрытии network warning: {e}")
         return False
 
 
@@ -459,13 +459,13 @@ async def confirm_metamask_action(
     success_text,
     timeout=30_000
 ):
-    print(f"[{profile_name}] ⏳ ожидаю окно MetaMask")
+    print(f"[{profile_name}] [WAIT] ожидаю окно MetaMask")
 
     try:
         mm_page = await context.wait_for_event("page", timeout=timeout)
         await mm_page.wait_for_load_state()
     except TimeoutError:
-        print(f"[{profile_name}] ⚠️ MetaMask не открылся")
+        print(f"[{profile_name}] [WARN] MetaMask не открылся")
         return False
 
     # 1️⃣ Кнопка «Подключиться»
@@ -473,7 +473,7 @@ async def confirm_metamask_action(
         connect_btn = mm_page.get_by_role("button", name="Подключиться")
         if await connect_btn.count():
             await connect_btn.click()
-            print(f"[{profile_name}] 🦊 MetaMask: Подключиться")
+            print(f"[{profile_name}]  MetaMask: Подключиться")
             await idle(1, 2)
     except:
         pass
@@ -483,7 +483,7 @@ async def confirm_metamask_action(
         confirm_btn = mm_page.get_by_role("button", name="Подтвердить")
         if await confirm_btn.count():
             await confirm_btn.click()
-            print(f"[{profile_name}] 🦊 MetaMask: Подтвердить")
+            print(f"[{profile_name}]  MetaMask: Подтвердить")
             await idle(1, 2)
     except:
         pass
@@ -494,10 +494,10 @@ async def confirm_metamask_action(
             "div",
             has_text=success_text
         ).wait_for(timeout=20_000)
-        print(f"[{profile_name}] ✅ подтверждено на сайте: {success_text}")
+        print(f"[{profile_name}] [OK] подтверждено на сайте: {success_text}")
         return True
     except TimeoutError:
-        print(f"[{profile_name}] ⚠️ toast '{success_text}' не появился")
+        print(f"[{profile_name}] [WARN] toast '{success_text}' не появился")
         return False
 
 
@@ -557,7 +557,7 @@ async def verify_test_network(mm_page, profile_name, active_network=None, policy
 
         if not expected_markers:
             logging.warning(
-                f"[{profile_name}] ⚠️ ACTIVE_NETWORK='{expected_network}' "
+                f"[{profile_name}] [WARN] ACTIVE_NETWORK='{expected_network}' "
                 f"не найден в NETWORK_ALLOWLIST! "
                 f"Добавьте сеть в словарь wallet.NETWORK_ALLOWLIST."
             )
@@ -567,7 +567,7 @@ async def verify_test_network(mm_page, profile_name, active_network=None, policy
         for marker in expected_markers:
             if marker.lower() in page_text:
                 logging.info(
-                    f"[{profile_name}] ✅ Сеть подтверждена: "
+                    f"[{profile_name}] [OK] Сеть подтверждена: "
                     f"{expected_network} (маркер: '{marker}')"
                 )
                 return True
@@ -579,7 +579,7 @@ async def verify_test_network(mm_page, profile_name, active_network=None, policy
             for marker in markers:
                 if marker.lower() in page_text:
                     logging.warning(
-                        f"[{profile_name}] ⚠️ Обнаружена сеть '{net_key}', "
+                        f"[{profile_name}] [WARN] Обнаружена сеть '{net_key}', "
                         f"а ожидается '{expected_network}'! "
                         f"Транзакция может быть на неправильной сети."
                     )
@@ -595,14 +595,14 @@ async def verify_test_network(mm_page, profile_name, active_network=None, policy
         for indicator in mainnet_indicators:
             if indicator in page_text:
                 logging.error(
-                    f"[{profile_name}] 🚨 ОБНАРУЖЕН MAINNET! "
+                    f"[{profile_name}]  ОБНАРУЖЕН MAINNET! "
                     f"Транзакция отменена ради безопасности!"
                 )
                 return False
 
         # Ни один маркер не найден — сеть неопределена
         logging.warning(
-            f"[{profile_name}] ⚠️ Не удалось определить сеть в MetaMask. "
+            f"[{profile_name}] [WARN] Не удалось определить сеть в MetaMask. "
             f"Ожидалась: '{expected_network}'. "
             f"Продолжаем с осторожностью."
         )
@@ -610,7 +610,7 @@ async def verify_test_network(mm_page, profile_name, active_network=None, policy
 
     except Exception as e:
         logging.warning(
-            f"[{profile_name}] ⚠️ Ошибка при проверке сети: {e}"
+            f"[{profile_name}] [WARN] Ошибка при проверке сети: {e}"
         )
         return None
 
@@ -692,7 +692,7 @@ async def _confirm_open_popup(
     if network_check is False:
         # Небезопасная сеть обнаружена — отклоняем транзакцию
         logging.error(
-            f"[{profile_name}] 🚨 Небезопасная сеть! Отклоняю транзакцию..."
+            f"[{profile_name}]  Небезопасная сеть! Отклоняю транзакцию..."
         )
         try:
             reject_btn = popup.get_by_role(
@@ -704,11 +704,11 @@ async def _confirm_open_popup(
             if await reject_btn.is_visible(timeout=3_000):
                 await reject_btn.click()
                 logging.warning(
-                    f"[{profile_name}] 🚨 Транзакция ОТКЛОНЕНА (небезопасная сеть)!"
+                    f"[{profile_name}]  Транзакция ОТКЛОНЕНА (небезопасная сеть)!"
                 )
         except Exception:
             logging.warning(
-                f"[{profile_name}] 🚨 Не удалось отклонить в MetaMask"
+                f"[{profile_name}]  Не удалось отклонить в MetaMask"
             )
         return False
 
@@ -718,7 +718,7 @@ async def _confirm_open_popup(
     async def _reject_action(action_type, btn_label):
         """Отклоняет действие, не входящее в ALLOWED_METAMASK_ACTIONS."""
         logging.error(
-            f"[{profile_name}] 🚨 Действие '{action_type}' ЗАПРЕЩЕНО! "
+            f"[{profile_name}]  Действие '{action_type}' ЗАПРЕЩЕНО! "
             f"ALLOWED_METAMASK_ACTIONS={actual_allowed_actions}. "
             f"Отклоняю..."
         )
@@ -732,11 +732,11 @@ async def _confirm_open_popup(
             if await reject_btn.is_visible(timeout=3_000):
                 await reject_btn.click()
                 logging.warning(
-                    f"[{profile_name}] 🚨 {btn_label} ОТКЛОНЕНО (не в allowlist)!"
+                    f"[{profile_name}]  {btn_label} ОТКЛОНЕНО (не в allowlist)!"
                 )
         except Exception:
             logging.warning(
-                f"[{profile_name}] 🚨 Не удалось отклонить {btn_label}"
+                f"[{profile_name}]  Не удалось отклонить {btn_label}"
             )
         return False
 
@@ -748,7 +748,7 @@ async def _confirm_open_popup(
         if await next_btn.is_visible():
             await asyncio.sleep(random.uniform(0.5, 1.5))
             await next_btn.click()
-            logging.info(f"[{profile_name}] 🦊 MetaMask: Next")
+            logging.info(f"[{profile_name}]  MetaMask: Next")
             await idle(1.0, 2.0)
             connect_btn = popup.get_by_role(
                 "button",
@@ -758,7 +758,7 @@ async def _confirm_open_popup(
                 await asyncio.sleep(random.uniform(0.5, 1.5))
                 await connect_btn.click()
                 logging.info(
-                    f"[{profile_name}] 🦊 MetaMask: Next → Connect"
+                    f"[{profile_name}]  MetaMask: Next → Connect"
                 )
                 return True
     else:
@@ -782,7 +782,7 @@ async def _confirm_open_popup(
         if await connect_btn_direct.is_visible():
             await asyncio.sleep(random.uniform(0.5, 1.5))
             await connect_btn_direct.click()
-            logging.info(f"[{profile_name}] 🦊 MetaMask: Connect")
+            logging.info(f"[{profile_name}]  MetaMask: Connect")
             return True
 
     # 3. Sign / Подписать
@@ -802,7 +802,7 @@ async def _confirm_open_popup(
                 await idle(0.5, 1.0)
         await asyncio.sleep(random.uniform(0.5, 1.5))
         await sign_btn.click()
-        logging.info(f"[{profile_name}] 🦊 MetaMask: Sign")
+        logging.info(f"[{profile_name}]  MetaMask: Sign")
         return True
 
     # 4. Approve / Одобрить
@@ -818,7 +818,7 @@ async def _confirm_open_popup(
             await _adjust_gas_in_metamask(popup, profile_name, GAS_LIMIT_OVERRIDE)
         await asyncio.sleep(random.uniform(0.5, 1.5))
         await approve_btn.click()
-        logging.info(f"[{profile_name}] 🦊 MetaMask: Approve")
+        logging.info(f"[{profile_name}]  MetaMask: Approve")
         return True
 
     # 5. Confirm / Подтвердить
@@ -834,11 +834,11 @@ async def _confirm_open_popup(
             await _adjust_gas_in_metamask(popup, profile_name, GAS_LIMIT_OVERRIDE)
         await asyncio.sleep(random.uniform(0.5, 1.5))
         await confirm_btn.click()
-        logging.info(f"[{profile_name}] 🦊 MetaMask: Confirm")
+        logging.info(f"[{profile_name}]  MetaMask: Confirm")
         return True
 
     logging.warning(
-        f"[{profile_name}] 🦊 Окно MetaMask открылось, но нужная кнопка не найдена"
+        f"[{profile_name}]  Окно MetaMask открылось, но нужная кнопка не найдена"
     )
     return False
 
@@ -861,7 +861,7 @@ async def handle_metamask_popup(
     """
     try:
         logging.info(
-            f"[{profile_name}] 🦊 Ожидание окна MetaMask для: {action_name}"
+            f"[{profile_name}]  Ожидание окна MetaMask для: {action_name}"
         )
 
         popup = None
@@ -870,7 +870,7 @@ async def handle_metamask_popup(
             popup = await _find_metamask_page(context)
             if popup:
                 logging.info(
-                    f"[{profile_name}] 🦊 Найдено уже открытое окно MetaMask"
+                    f"[{profile_name}]  Найдено уже открытое окно MetaMask"
                 )
                 break
 
@@ -881,7 +881,7 @@ async def handle_metamask_popup(
                     "page", timeout=wait_timeout
                 )
                 logging.info(
-                    f"[{profile_name}] 🦊 Поймано новое окно MetaMask"
+                    f"[{profile_name}]  Поймано новое окно MetaMask"
                 )
                 break
             except TimeoutError:
@@ -890,19 +890,19 @@ async def handle_metamask_popup(
                 popup = await _find_metamask_page(context)
                 if popup:
                     logging.info(
-                        f"[{profile_name}] 🦊 Найдено окно MetaMask "
+                        f"[{profile_name}]  Найдено окно MetaMask "
                         f"после таймаута (попытка {attempt + 1})"
                     )
                     break
                 if attempt < 2:
                     logging.info(
-                        f"[{profile_name}] 🦊 Popup не найден, "
+                        f"[{profile_name}]  Popup не найден, "
                         f"попробую ещё раз (попытка {attempt + 1}/3)"
                     )
                     await asyncio.sleep(1.0)
                 else:
                     logging.info(
-                        f"[{profile_name}] 🦊 Тайм-аут ожидания окна MetaMask "
+                        f"[{profile_name}]  Тайм-аут ожидания окна MetaMask "
                         f"для {action_name} после 3 попыток"
                     )
                     return False
@@ -926,12 +926,12 @@ async def handle_metamask_popup(
 
     except TimeoutError:
         logging.info(
-            f"[{profile_name}] 🦊 Тайм-аут ожидания окна MetaMask "
+            f"[{profile_name}]  Тайм-аут ожидания окна MetaMask "
             f"({action_name})"
         )
     except Exception as e:
         logging.error(
-            f"[{profile_name}] 🦊 Ошибка в MetaMask popup: {e}"
+            f"[{profile_name}]  Ошибка в MetaMask popup: {e}"
         )
     return False
 
@@ -945,11 +945,11 @@ async def handle_metamask_popup_sequence(
     Универсальный цикл подхвата попапов MetaMask без навязывания порядка.
     """
     confirmed_types = []
-    logging.info(f"[{profile_name}] 🦊 Запуск универсального цикла подхвата попапов MetaMask (max={max_popups})")
+    logging.info(f"[{profile_name}]  Запуск универсального цикла подхвата попапов MetaMask (max={max_popups})")
 
     for i in range(max_popups):
         timeout_ms = first_timeout if i == 0 else settle_timeout
-        logging.debug(f"[{profile_name}] 🦊 Ожидание попапа #{i+1} (timeout={timeout_ms}ms)...")
+        logging.debug(f"[{profile_name}]  Ожидание попапа #{i+1} (timeout={timeout_ms}ms)...")
 
         popup = None
         # Ищем уже открытое окно
@@ -964,9 +964,9 @@ async def handle_metamask_popup_sequence(
 
         if not popup:
             if i == 0:
-                logging.warning(f"[{profile_name}] 🦊 MetaMask попап не появился в течение {first_timeout}ms.")
+                logging.warning(f"[{profile_name}]  MetaMask попап не появился в течение {first_timeout}ms.")
             else:
-                logging.info(f"[{profile_name}] 🦊 Больше попапов не обнаружено (таймаут {settle_timeout}ms исчерпан). Завершаем цикл.")
+                logging.info(f"[{profile_name}]  Больше попапов не обнаружено (таймаут {settle_timeout}ms исчерпан). Завершаем цикл.")
             break
 
         try:
@@ -979,7 +979,7 @@ async def handle_metamask_popup_sequence(
 
         # Определяем тип попапа
         classified_type = await classify_metamask_popup(popup)
-        logging.info(f"[{profile_name}] 🦊 Определён попап: {classified_type}")
+        logging.info(f"[{profile_name}]  Определён попап: {classified_type}")
 
         # Подтверждаем попап
         success = await _confirm_open_popup(
@@ -1008,7 +1008,7 @@ async def handle_metamask_popup_sequence(
             # Небольшая human-пауза перед следующей итерацией
             await idle(1.5, 3.0)
         else:
-            logging.warning(f"[{profile_name}] ⚠️ Не удалось подтвердить попап типа {classified_type}")
+            logging.warning(f"[{profile_name}] [WARN] Не удалось подтвердить попап типа {classified_type}")
             # В случае ошибки подтверждения выходим из цикла
             break
 
@@ -1031,7 +1031,7 @@ async def handle_multiple_metamask_popups(
         else:
             break
     logging.info(
-        f"[{profile_name}] 🦊 Обработано {handled} попап(ов) MetaMask "
+        f"[{profile_name}]  Обработано {handled} попап(ов) MetaMask "
         f"для {action_name}"
     )
     return handled
@@ -1089,7 +1089,7 @@ async def confirm_dapp_transaction(
     """
     if click_fn is None:
         logging.warning(
-            f"[{profile_name}] ⚠️ click_fn не передан — "
+            f"[{profile_name}] [WARN] click_fn не передан — "
             f"нечем искать кнопки для {action_name}"
         )
         return 0
@@ -1117,7 +1117,7 @@ async def confirm_dapp_transaction(
             # Это решает проблему, когда скрипт "продолжал искать кнопку", игнорируя появившийся попап
             unhandled_popup = await _find_metamask_page(context)
             if unhandled_popup:
-                logging.info(f"[{profile_name}] 🦊 Обнаружен задержавшийся MetaMask popup! Обрабатываю...")
+                logging.info(f"[{profile_name}]  Обнаружен задержавшийся MetaMask popup! Обрабатываю...")
                 delayed_result = await handle_metamask_popup(
                     context, profile_name, f"{action_name}_delayed", policy=policy
                 )
@@ -1128,7 +1128,7 @@ async def confirm_dapp_transaction(
             
             if iteration == 0:
                 logging.info(
-                    f"[{profile_name}] ℹ️ Нет доступных кнопок действий "
+                    f"[{profile_name}] [INFO] Нет доступных кнопок действий "
                     f"для {action_name}"
                 )
                 break
@@ -1137,7 +1137,7 @@ async def confirm_dapp_transaction(
             # Ждём 12с и пробуем ещё раз перед тем как сдаться.
             if total_steps > 0:
                 logging.info(
-                    f"[{profile_name}] ⏳ Кнопок не найдено после {total_steps} шагов, "
+                    f"[{profile_name}] [WAIT] Кнопок не найдено после {total_steps} шагов, "
                     f"жду {second_chance_delay}с и пробую ещё раз..."
                 )
                 await asyncio.sleep(second_chance_delay)
@@ -1149,18 +1149,18 @@ async def confirm_dapp_transaction(
                     triggers_mm = True
                 if clicked:
                     logging.info(
-                        f"[{profile_name}] ✅ Кнопка найдена после ожидания: '{btn_name}'"
+                        f"[{profile_name}] [OK] Кнопка найдена после ожидания: '{btn_name}'"
                     )
                     # Не break — продолжаем обработку этой кнопки ниже
                 else:
                     logging.info(
-                        f"[{profile_name}] ✅ Все кнопки действий обработаны "
+                        f"[{profile_name}] [OK] Все кнопки действий обработаны "
                         f"для {action_name} ({total_steps} шагов)"
                     )
                     break
             else:
                 logging.info(
-                    f"[{profile_name}] ✅ Все кнопки действий обработаны "
+                    f"[{profile_name}] [OK] Все кнопки действий обработаны "
                     f"для {action_name} ({total_steps} шагов)"
                 )
                 break
@@ -1170,7 +1170,7 @@ async def confirm_dapp_transaction(
             stale_count += 1
             if stale_count >= MAX_STALE:
                 logging.warning(
-                    f"[{profile_name}] ⚠️ Кнопка '{btn_name}' появляется "
+                    f"[{profile_name}] [WARN] Кнопка '{btn_name}' появляется "
                     f"{stale_count} раз подряд — вероятно зависли, "
                     f"прерываю цикл"
                 )
@@ -1180,7 +1180,7 @@ async def confirm_dapp_transaction(
         last_btn_name = btn_name
 
         logging.info(
-            f"[{profile_name}] 🔄 Шаг {iteration + 1}: нажал "
+            f"[{profile_name}] [RETRY] Шаг {iteration + 1}: нажал "
             f"'{btn_name}' для {action_name}"
             f" {'[→MetaMask]' if triggers_mm else '[UI-only]'}"
         )
@@ -1207,7 +1207,7 @@ async def confirm_dapp_transaction(
                 break
             if mm_attempt == 0:
                 logging.info(
-                    f"[{profile_name}] 🔄 MetaMask не ответил с первой попытки, "
+                    f"[{profile_name}] [RETRY] MetaMask не ответил с первой попытки, "
                     f"повтор через 3с..."
                 )
                 await asyncio.sleep(3.0)
@@ -1215,13 +1215,13 @@ async def confirm_dapp_transaction(
         if mm_result:
             total_steps += 1
             logging.info(
-                f"[{profile_name}] ✅ Подтверждено в MetaMask: {btn_name}"
+                f"[{profile_name}] [OK] Подтверждено в MetaMask: {btn_name}"
             )
             
             # СНАЧАЛА проверяем авто-попапы (для Liquidity, где попапы могут идти подряд)
             if auto_mm_check_delay > 0:
                 logging.info(
-                    f"[{profile_name}] ⏳ Жду {auto_mm_check_delay}с для проверки "
+                    f"[{profile_name}] [WAIT] Жду {auto_mm_check_delay}с для проверки "
                     f"авто-попапа MetaMask..."
                 )
                 await asyncio.sleep(auto_mm_check_delay)
@@ -1229,7 +1229,7 @@ async def confirm_dapp_transaction(
                 auto_popup = await _find_metamask_page(context)
                 if auto_popup:
                     logging.info(
-                        f"[{profile_name}] 🦊 Авто-попап MetaMask обнаружен! "
+                        f"[{profile_name}]  Авто-попап MetaMask обнаружен! "
                         f"Подтверждаю без поиска кнопки..."
                     )
                     auto_result = await handle_metamask_popup(
@@ -1240,27 +1240,27 @@ async def confirm_dapp_transaction(
                     if auto_result:
                         total_steps += 1
                         logging.info(
-                            f"[{profile_name}] ✅ Авто-подтверждено в MetaMask"
+                            f"[{profile_name}] [OK] Авто-подтверждено в MetaMask"
                         )
                     else:
                         logging.warning(
-                            f"[{profile_name}] ⚠️ Авто-попап MetaMask не подтвердился"
+                            f"[{profile_name}] [WARN] Авто-попап MetaMask не подтвердился"
                         )
                 else:
                     logging.info(
-                        f"[{profile_name}] ℹ️ Авто-попап MetaMask не появился."
+                        f"[{profile_name}] [INFO] Авто-попап MetaMask не появился."
                     )
 
             # ЗАТЕМ проверяем терминальное действие
             if terminal_fn and terminal_fn(btn_name):
                 logging.info(
-                    f"[{profile_name}] 🏁 Терминальное действие '{btn_name}' "
+                    f"[{profile_name}] [FINISH] Терминальное действие '{btn_name}' "
                     f"подтверждено — выходим из цикла"
                 )
                 break
         else:
             logging.warning(
-                f"[{profile_name}] ⚠️ MetaMask не подтвердил: {btn_name} "
+                f"[{profile_name}] [WARN] MetaMask не подтвердил: {btn_name} "
                 f"(2 попытки исчерпаны)"
             )
             # NEW: Закрываем зависший попап MetaMask, чтобы не блокировал dApp
@@ -1273,16 +1273,16 @@ async def confirm_dapp_transaction(
                     )
                     if await reject_btn.is_visible(timeout=3_000):
                         await reject_btn.click()
-                        logging.info(f"[{profile_name}] 🦊 Зависший попап MetaMask закрыт")
+                        logging.info(f"[{profile_name}]  Зависший попап MetaMask закрыт")
                     else:
                         await stuck_popup.close()
-                        logging.info(f"[{profile_name}] 🦊 Зависший попап MetaMask закрыт (close)")
+                        logging.info(f"[{profile_name}]  Зависший попап MetaMask закрыт (close)")
             except Exception:
                 pass
             # После неудачи с MetaMask — выходим из цикла.
             # Дальнейшие итерации только запутают dApp.
             logging.warning(
-                f"[{profile_name}] ⚠️ Прерываю цепочку из-за ошибки MetaMask "
+                f"[{profile_name}] [WARN] Прерываю цепочку из-за ошибки MetaMask "
                 f"({total_steps} шагов выполнено)"
             )
             break

@@ -122,9 +122,9 @@ async def read_balance(page: Page, label: str) -> float | None:
             if match:
                 return float(match.group(1))
     except TimeoutError:
-        logging.warning(f"⚠️ Баланс '{label}' не найден (таймаут)")
+        logging.warning(f"[WARN] Баланс '{label}' не найден (таймаут)")
     except Exception as e:
-        logging.warning(f"⚠️ Ошибка чтения баланса '{label}': {e}")
+        logging.warning(f"[WARN] Ошибка чтения баланса '{label}': {e}")
     return None
 
 

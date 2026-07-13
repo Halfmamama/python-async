@@ -9,7 +9,7 @@ async def idle(a=2, b=5):
 async def wait_for_reactions_or_timeout(page, timeout=15_000):
     try:
         await page.wait_for_selector(
-            'div.chakra-stack p:has-text("👍")',
+            'div.chakra-stack p:has-text("")',
             timeout=timeout
         )
         return True
@@ -26,8 +26,8 @@ async def safe_open(
     """
     Универсальное открытие SPA / testnet / dashboard страниц.
 
-    ❌ НЕ верит HTTP статусам (503, 429, CF)
-    ✅ Верит ТОЛЬКО живому DOM
+    [FAIL] НЕ верит HTTP статусам (503, 429, CF)
+    [OK] Верит ТОЛЬКО живому DOM
     """
 
     await page.goto(url, wait_until="domcontentloaded", timeout=goto_timeout)
@@ -113,7 +113,7 @@ async def safe_open_with_retry(page, url, profile_name, retries=3, timeout=30_00
                 raise ProxyConnectionError(str(e))
 
             logging.warning(
-                f"[{profile_name}] ⚠️ 503 detected, reload #{attempt}"
+                f"[{profile_name}] [WARN] 503 detected, reload #{attempt}"
             )
             if attempt == retries:
                 raise RuntimeError("503 not resolved")

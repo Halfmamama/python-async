@@ -63,7 +63,7 @@ async def click_swap_tab(page, name):
     swap_btn = get_swap_tab(page)
     await human_click(swap_btn, name, "Swap tab")
     await human_pause(1.0, 2.5)
-    logging.info(f"[{name}] 🔄 Переключился на Swap")
+    logging.info(f"[{name}] [RETRY] Переключился на Swap")
 
 
 # ===================== SWAP ETH → DAI =====================
@@ -82,7 +82,7 @@ async def do_swap_eth_to_dai(page, context, name, swap_amount=None):
     """
     for attempt in range(MAX_RETRIES):
         try:
-            logging.info(f"[{name}] 🔄 Свап ETH → DAI (попытка {attempt + 1})")
+            logging.info(f"[{name}] [RETRY] Свап ETH → DAI (попытка {attempt + 1})")
 
             # --- 1. Переключаемся на Swap ---
             await click_swap_tab(page, name)
@@ -99,18 +99,18 @@ async def do_swap_eth_to_dai(page, context, name, swap_amount=None):
 
             # Сумма свапа зависит от переданного аргумента или текущего баланса DAI
             if swap_amount is not None:
-                logging.info(f"[{name}] 💰 Использую фиксированную сумму для свапа: {swap_amount} ETH")
+                logging.info(f"[{name}]  Использую фиксированную сумму для свапа: {swap_amount} ETH")
             elif dai_balance_before is not None and dai_balance_before >= DAI_THRESHOLD:
                 swap_amount = SWAP_ETH_TO_DAI_HIGH  # 0.001 ETH — DAI уже достаточно
                 logging.info(
-                    f"[{name}] 💰 DAI баланс: {dai_balance_before} (>= {DAI_THRESHOLD}), "
+                    f"[{name}]  DAI баланс: {dai_balance_before} (>= {DAI_THRESHOLD}), "
                     f"свапаем минимум: {swap_amount} ETH"
                 )
             else:
                 swap_amount = SWAP_ETH_TO_DAI_LOW  # 0.01 ETH — нужно больше DAI
                 dai_info = f"{dai_balance_before}" if dai_balance_before is not None else "неизвестно"
                 logging.info(
-                    f"[{name}] 💰 DAI баланс: {dai_info} (< {DAI_THRESHOLD}), "
+                    f"[{name}]  DAI баланс: {dai_info} (< {DAI_THRESHOLD}), "
                     f"свапаем: {swap_amount} ETH"
                 )
 
@@ -120,12 +120,12 @@ async def do_swap_eth_to_dai(page, context, name, swap_amount=None):
                 available = eth_balance - MIN_ETH_RESERVE
                 if available < swap_amount:
                     logging.warning(
-                        f"[{name}] ⚠️ ETH мало ({eth_balance}). "
+                        f"[{name}] [WARN] ETH мало ({eth_balance}). "
                         f"Доступно: {available:.4f}, нужно: {swap_amount}"
                     )
                     return None
                 logging.info(
-                    f"[{name}] 💰 ETH баланс: {eth_balance}, "
+                    f"[{name}]  ETH баланс: {eth_balance}, "
                     f"доступно для свапа: {available:.4f}"
                 )
 
@@ -138,7 +138,7 @@ async def do_swap_eth_to_dai(page, context, name, swap_amount=None):
             await human_click(amount_input, name, "ETH amount field")
             await human_pause(0.3, 0.8)
             await human_type(page, str(swap_amount), field=amount_input)
-            logging.info(f"[{name}] 🔄 Ввёл сумму: {swap_amount} ETH")
+            logging.info(f"[{name}] [RETRY] Ввёл сумму: {swap_amount} ETH")
             await human_pause(1.0, 2.5)
 
             # --- 6. Нажимаем Swap ---
@@ -148,7 +148,7 @@ async def do_swap_eth_to_dai(page, context, name, swap_amount=None):
             await human_pause(1.0, 2.0)
 
             # --- 7. Подтверждаем транзакцию (Approve + Confirm Swap + MetaMask) ---
-            logging.info(f"[{name}] 🔄 Начинаю цепочку подтверждений для свапа ETH → DAI")
+            logging.info(f"[{name}] [RETRY] Начинаю цепочку подтверждений для свапа ETH → DAI")
             await human_pause(2.0, 3.0)  # Пауза перед поиском кнопок
             
             steps = await confirm_dapp_transaction(
@@ -161,19 +161,19 @@ async def do_swap_eth_to_dai(page, context, name, swap_amount=None):
                 policy=POLICY,
             )
             if steps == 0:
-                logging.warning(f"[{name}] ⚠️ Не удалось подтвердить свап ETH → DAI")
+                logging.warning(f"[{name}] [WARN] Не удалось подтвердить свап ETH → DAI")
 
             # --- 8. Ждём уведомление ---
             if await wait_for_toast(page, r"Swapped", timeout=TX_WAIT_TIMEOUT):
-                logging.info(f"[{name}] ✅ Свап ETH → DAI выполнен!")
+                logging.info(f"[{name}] [OK] Свап ETH → DAI выполнен!")
                 # --- 9. Читаем баланс DAI из To ---
                 await human_pause(1.0, 2.0)
                 dai_balance = await read_to_balance(page, name)
                 if dai_balance:
-                    logging.info(f"[{name}] 💰 DAI баланс после свапа: {dai_balance}")
+                    logging.info(f"[{name}]  DAI баланс после свапа: {dai_balance}")
                 return dai_balance
             else:
-                logging.warning(f"[{name}] ⚠️ Уведомление о свапе не появилось, повторное подтверждение...")
+                logging.warning(f"[{name}] [WARN] Уведомление о свапе не появилось, повторное подтверждение...")
                 await human_pause(3.0, 5.0)
                 retry_steps = await confirm_dapp_transaction(
                     page, context, name,
@@ -185,25 +185,25 @@ async def do_swap_eth_to_dai(page, context, name, swap_amount=None):
                 )
                 if retry_steps > 0:
                     if await wait_for_toast(page, r"Swapped", timeout=TX_WAIT_TIMEOUT):
-                        logging.info(f"[{name}] ✅ Свап ETH → DAI выполнен (ретрай)!")
+                        logging.info(f"[{name}] [OK] Свап ETH → DAI выполнен (ретрай)!")
                         await human_pause(1.0, 2.0)
                         dai_balance = await read_to_balance(page, name)
                         return dai_balance
                     else:
-                        logging.warning(f"[{name}] ⚠️ Свап не удался даже после ретрая")
+                        logging.warning(f"[{name}] [WARN] Свап не удался даже после ретрая")
                 
-                logging.warning(f"[{name}] ⚠️ Ошибка или не появилось уведомление, перезагружаю страницу...")
+                logging.warning(f"[{name}] [WARN] Ошибка или не появилось уведомление, перезагружаю страницу...")
                 await asyncio.sleep(random.uniform(5.0, 7.0))
                 await page.reload()
                 await page.wait_for_load_state("networkidle")
                 await idle(3.0, 5.0)
 
         except Exception as e:
-            logging.error(f"[{name}] ❌ Ошибка при свапе ETH → DAI (попытка {attempt + 1}): {e}")
+            logging.error(f"[{name}] [FAIL] Ошибка при свапе ETH → DAI (попытка {attempt + 1}): {e}")
             await page.reload()
             await idle(3.0, 5.0)
 
-    logging.error(f"[{name}] ❌ Исчерпаны попытки свапа ETH → DAI")
+    logging.error(f"[{name}] [FAIL] Исчерпаны попытки свапа ETH → DAI")
     return None
 
 
@@ -225,7 +225,7 @@ async def do_swap_dai_to_token(page, context, name, target_token=None, swap_amou
 
     for attempt in range(MAX_RETRIES):
         try:
-            logging.info(f"[{name}] 🔄 Свап DAI → {target_token} (попытка {attempt + 1})")
+            logging.info(f"[{name}] [RETRY] Свап DAI → {target_token} (попытка {attempt + 1})")
 
             # --- 1. Переключаемся на Swap ---
             await click_swap_tab(page, name)
@@ -258,7 +258,7 @@ async def do_swap_dai_to_token(page, context, name, target_token=None, swap_amou
                     available = dai_balance - MIN_DAI_RESERVE
                     if available < SWAP_DAI_MIN:
                         logging.warning(
-                            f"[{name}] ⚠️ DAI мало ({dai_balance}). "
+                            f"[{name}] [WARN] DAI мало ({dai_balance}). "
                             f"Доступно: {available:.2f}, минимум: {SWAP_DAI_MIN}"
                         )
                         return None
@@ -267,7 +267,7 @@ async def do_swap_dai_to_token(page, context, name, target_token=None, swap_amou
                 else:
                     current_swap_amount = round(random.uniform(SWAP_DAI_MIN, SWAP_DAI_MAX), 2)
 
-            logging.info(f"[{name}] 🔄 Сумма свапа: {current_swap_amount} DAI")
+            logging.info(f"[{name}] [RETRY] Сумма свапа: {current_swap_amount} DAI")
 
             # --- 5. Вводим сумму (посимвольно) ---
             amount_input = get_field_input(page, "From")
@@ -278,7 +278,7 @@ async def do_swap_dai_to_token(page, context, name, target_token=None, swap_amou
             await human_click(amount_input, name, "DAI amount field")
             await human_pause(0.3, 0.8)
             await human_type(page, str(current_swap_amount), field=amount_input)
-            logging.info(f"[{name}] 🔄 Ввёл сумму: {current_swap_amount} DAI")
+            logging.info(f"[{name}] [RETRY] Ввёл сумму: {current_swap_amount} DAI")
             await human_pause(1.0, 2.5)
 
             # --- 6. Нажимаем Swap ---
@@ -298,14 +298,14 @@ async def do_swap_dai_to_token(page, context, name, target_token=None, swap_amou
                 policy=POLICY,
             )
             if steps == 0:
-                logging.warning(f"[{name}] ⚠️ Не удалось подтвердить свап DAI → {target_token}")
+                logging.warning(f"[{name}] [WARN] Не удалось подтвердить свап DAI → {target_token}")
 
             # --- 8. Ждём уведомление ---
             if await wait_for_toast(page, r"Swapped", timeout=TX_WAIT_TIMEOUT):
-                logging.info(f"[{name}] ✅ Свап DAI → {target_token} выполнен!")
+                logging.info(f"[{name}] [OK] Свап DAI → {target_token} выполнен!")
                 return target_token
             else:
-                logging.warning(f"[{name}] ⚠️ Уведомление о свапе не появилось, повторное подтверждение...")
+                logging.warning(f"[{name}] [WARN] Уведомление о свапе не появилось, повторное подтверждение...")
                 await human_pause(3.0, 5.0)
                 retry_steps = await confirm_dapp_transaction(
                     page, context, name,
@@ -317,21 +317,21 @@ async def do_swap_dai_to_token(page, context, name, target_token=None, swap_amou
                 )
                 if retry_steps > 0:
                     if await wait_for_toast(page, r"Swapped", timeout=TX_WAIT_TIMEOUT):
-                        logging.info(f"[{name}] ✅ Свап DAI → {target_token} выполнен (ретрай)!")
+                        logging.info(f"[{name}] [OK] Свап DAI → {target_token} выполнен (ретрай)!")
                         return target_token
                     else:
-                        logging.warning(f"[{name}] ⚠️ Свап не удался даже после ретрая")
+                        logging.warning(f"[{name}] [WARN] Свап не удался даже после ретрая")
                 
-                logging.warning(f"[{name}] ⚠️ Ошибка или не появилось уведомление, перезагружаю страницу...")
+                logging.warning(f"[{name}] [WARN] Ошибка или не появилось уведомление, перезагружаю страницу...")
                 await asyncio.sleep(random.uniform(5.0, 7.0))
                 await page.reload()
                 await page.wait_for_load_state("networkidle")
                 await idle(3.0, 5.0)
 
         except Exception as e:
-            logging.error(f"[{name}] ❌ Ошибка при свапе DAI → {target_token} (попытка {attempt + 1}): {e}")
+            logging.error(f"[{name}] [FAIL] Ошибка при свапе DAI → {target_token} (попытка {attempt + 1}): {e}")
             await page.reload()
             await idle(3.0, 5.0)
 
-    logging.error(f"[{name}] ❌ Исчерпаны попытки свапа DAI → {target_token}")
+    logging.error(f"[{name}] [FAIL] Исчерпаны попытки свапа DAI → {target_token}")
     return None

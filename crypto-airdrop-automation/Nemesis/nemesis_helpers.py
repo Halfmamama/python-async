@@ -179,22 +179,22 @@ def is_terminal_action(btn_name: str) -> bool:
     # "Confirm Swap" → терминальное (чистый свап на вкладке Swap)
     # "Swap DAI → UNI" → НЕ терминальное (часть цепочки LS)
     if "confirm swap" in text:
-        logging.debug(f"🏁 Terminal check: '{btn_name}' → TERMINAL (Confirm Swap)")
+        logging.debug(f"[FINISH] Terminal check: '{btn_name}' → TERMINAL (Confirm Swap)")
         return True
     
     # "Open 2x Short/Long" → терминальное (позиция открыта)
     if "open" in text and ("short" in text or "long" in text):
-        logging.debug(f"🏁 Terminal check: '{btn_name}' → TERMINAL (Open Position)")
+        logging.debug(f"[FINISH] Terminal check: '{btn_name}' → TERMINAL (Open Position)")
         return True
     
     # "Supply" / "Confirm Supply" → терминальное (ликвидность добавлена)
     if "supply" in text and "approve" not in text:
-        logging.debug(f"🏁 Terminal check: '{btn_name}' → TERMINAL (Supply)")
+        logging.debug(f"[FINISH] Terminal check: '{btn_name}' → TERMINAL (Supply)")
         return True
     
     # "Add Liquidity" → терминальное (ликвидность добавлена)
     if "add liquidity" in text:
-        logging.debug(f"🏁 Terminal check: '{btn_name}' → TERMINAL (Add Liquidity)")
+        logging.debug(f"[FINISH] Terminal check: '{btn_name}' → TERMINAL (Add Liquidity)")
         return True
     
     logging.debug(f"⏭️  Terminal check: '{btn_name}' → NOT terminal (continue loop)")
@@ -224,7 +224,7 @@ async def click_nemesis_action_button(page, profile_name, timeout=5_000):
         try:
             buttons = page.locator("button")
             count = await buttons.count()
-            logging.info(f"[{profile_name}] 🔍 Сканирую {count} кнопок на странице...")
+            logging.info(f"[{profile_name}] [SEARCH] Сканирую {count} кнопок на странице...")
 
             best = None          # (button_locator, text, width, triggers_mm)
             best_disabled = None # То же, но кнопка disabled — ждём enabled
@@ -281,7 +281,7 @@ async def click_nemesis_action_button(page, profile_name, timeout=5_000):
                         narrow_count += 1
                         if text and len(text) > 3:
                             logging.info(
-                                f"[{profile_name}] 🔍 Узкая: '{text}' "
+                                f"[{profile_name}] [SEARCH] Узкая: '{text}' "
                                 f"({box['width']:.0f}px < {ACTION_BUTTON_MIN_WIDTH})"
                             )
                         continue
@@ -289,7 +289,7 @@ async def click_nemesis_action_button(page, profile_name, timeout=5_000):
                     # NEW: Логируем все кандидаты на клик (INFO уровень)
                     candidate_count += 1
                     logging.info(
-                        f"[{profile_name}] ✅ Кандидат #{candidate_count}: '{text}' "
+                        f"[{profile_name}] [OK] Кандидат #{candidate_count}: '{text}' "
                         f"({box['width']:.0f}px) brand={is_brand_btn} "
                         f"enabled={await btn.is_enabled()}"
                     )
@@ -310,7 +310,7 @@ async def click_nemesis_action_button(page, profile_name, timeout=5_000):
 
                     # Debug-логирование — видим все кандидаты
                     logging.debug(
-                        f"[{profile_name}] 🔍 Кнопка: '{text}' "
+                        f"[{profile_name}] [SEARCH] Кнопка: '{text}' "
                         f"({box['width']:.0f}px) "
                         f"enabled={is_enabled} mm={triggers_mm}"
                     )
@@ -331,7 +331,7 @@ async def click_nemesis_action_button(page, profile_name, timeout=5_000):
             if best is None and best_disabled is not None:
                 disabled_btn, disabled_text, disabled_width, disabled_mm = best_disabled
                 logging.info(
-                    f"[{profile_name}] ⏳ Кнопка '{disabled_text}' disabled, "
+                    f"[{profile_name}] [WAIT] Кнопка '{disabled_text}' disabled, "
                     f"жду enabled (до {ENABLED_WAIT/1000:.0f}с)..."
                 )
                 poll_interval = 1.0
@@ -343,7 +343,7 @@ async def click_nemesis_action_button(page, profile_name, timeout=5_000):
                         if await disabled_btn.is_enabled():
                             best = best_disabled
                             logging.info(
-                                f"[{profile_name}] ✅ Кнопка '{disabled_text}' "
+                                f"[{profile_name}] [OK] Кнопка '{disabled_text}' "
                                 f"стала enabled через {elapsed:.0f}с"
                             )
                             break
@@ -360,14 +360,14 @@ async def click_nemesis_action_button(page, profile_name, timeout=5_000):
                 await asyncio.sleep(random.uniform(0.5, 1.5))
                 await btn.click()
                 logging.info(
-                    f"[{profile_name}] 👆 Универсальный клик: '{text}' ({width:.0f}px)"
+                    f"[{profile_name}]  Универсальный клик: '{text}' ({width:.0f}px)"
                     f" {'[→MetaMask]' if triggers_mm else '[UI-only]'}"
                 )
                 return (text, True, triggers_mm)
             else:
                 # NEW: Логируем статистику если не нашли кнопку
                 logging.info(
-                    f"[{profile_name}] 📊 Статистика: "
+                    f"[{profile_name}]  Статистика: "
                     f"всего={count} | исключено={excluded_count} | "
                     f"узкие={narrow_count} | кандидаты={candidate_count}"
                 )
@@ -378,7 +378,7 @@ async def click_nemesis_action_button(page, profile_name, timeout=5_000):
         # Не нашли кнопку — ждём и пробуем снова
         if scan_attempt < SCAN_RETRIES - 1:
             logging.info(
-                f"[{profile_name}] ⏳ Кнопок не найдено, "
+                f"[{profile_name}] [WAIT] Кнопок не найдено, "
                 f"повторное сканирование через {SCAN_RETRY_DELAY}с "
                 f"(попытка {scan_attempt+2}/{SCAN_RETRIES})..."
             )
@@ -408,9 +408,9 @@ async def read_from_balance(page, name):
     """Читает баланс из поля 'From' (через селектор по метке)."""
     balance = await read_balance(page, "From")
     if balance is not None:
-        logging.info(f"[{name}] 💰 From баланс: {balance}")
+        logging.info(f"[{name}]  From баланс: {balance}")
     else:
-        logging.warning(f"[{name}] ⚠️ Не удалось прочитать From баланс")
+        logging.warning(f"[{name}] [WARN] Не удалось прочитать From баланс")
     return balance
 
 
@@ -418,9 +418,9 @@ async def read_to_balance(page, name):
     """Читает баланс из поля 'To' (через селектор по метке)."""
     balance = await read_balance(page, "To")
     if balance is not None:
-        logging.info(f"[{name}] 💰 To баланс: {balance}")
+        logging.info(f"[{name}]  To баланс: {balance}")
     else:
-        logging.warning(f"[{name}] ⚠️ Не удалось прочитать To баланс")
+        logging.warning(f"[{name}] [WARN] Не удалось прочитать To баланс")
     return balance
 
 
@@ -446,12 +446,12 @@ async def select_token_in_dialog(page, name, token_symbol):
         await token_locator.wait_for(state="visible", timeout=5_000)
         await human_pause(0.3, 1.0)
         await human_click(token_locator, name, f"Token {token_symbol} (strategy 1)")
-        logging.info(f"[{name}] 🪙 Выбран токен: {token_symbol} (стратегия 1)")
+        logging.info(f"[{name}]  Выбран токен: {token_symbol} (стратегия 1)")
         return True
     except TimeoutError:
-        logging.info(f"[{name}] ℹ️ Токен {token_symbol} не найден стратегией 1, пробуем 2...")
+        logging.info(f"[{name}] [INFO] Токен {token_symbol} не найден стратегией 1, пробуем 2...")
     except Exception as e:
-        logging.info(f"[{name}] ℹ️ Стратегия 1 ошибка: {e}, пробуем 2...")
+        logging.info(f"[{name}] [INFO] Стратегия 1 ошибка: {e}, пробуем 2...")
 
     # Стратегия 2: кнопка внутри диалога с точным текстом SYMBOL
     try:
@@ -464,10 +464,10 @@ async def select_token_in_dialog(page, name, token_symbol):
             await token_in_dialog.wait_for(state="visible", timeout=5_000)
             await human_pause(0.3, 1.0)
             await human_click(token_in_dialog, name, f"Token {token_symbol} (strategy 2)")
-            logging.info(f"[{name}] 🪙 Выбран токен: {token_symbol} (стратегия 2)")
+            logging.info(f"[{name}]  Выбран токен: {token_symbol} (стратегия 2)")
             return True
     except TimeoutError:
-        logging.info(f"[{name}] ℹ️ Токен {token_symbol} не найден стратегией 2, пробуем 3...")
+        logging.info(f"[{name}] [INFO] Токен {token_symbol} не найден стратегией 2, пробуем 3...")
     except Exception:
         pass
 
@@ -479,12 +479,12 @@ async def select_token_in_dialog(page, name, token_symbol):
         await token_by_text.wait_for(state="visible", timeout=5_000)
         await human_pause(0.3, 1.0)
         await human_click(token_by_text, name, f"Token {token_symbol} (strategy 3)")
-        logging.info(f"[{name}] 🪙 Выбран токен: {token_symbol} (стратегия 3)")
+        logging.info(f"[{name}]  Выбран токен: {token_symbol} (стратегия 3)")
         return True
     except TimeoutError:
-        logging.error(f"[{name}] ❌ Токен {token_symbol} не найден ни одной стратегией")
+        logging.error(f"[{name}] [FAIL] Токен {token_symbol} не найден ни одной стратегией")
     except Exception as e:
-        logging.error(f"[{name}] ❌ Ошибка при выборе токена {token_symbol}: {e}")
+        logging.error(f"[{name}] [FAIL] Ошибка при выборе токена {token_symbol}: {e}")
 
     # Закрываем диалог чтобы dialog-overlay не блокировал клики
     try:
@@ -494,7 +494,7 @@ async def select_token_in_dialog(page, name, token_symbol):
         if await overlay.count() > 0:
             await overlay.press("Escape")
             await asyncio.sleep(0.5)
-        logging.info(f"[{name}] 🚪 Диалог выбора токена закрыт")
+        logging.info(f"[{name}]  Диалог выбора токена закрыт")
     except Exception:
         pass
     return False
@@ -510,7 +510,7 @@ async def ensure_token_selected(page, name, token_btn_locator, target_token, log
         current_token = (await token_btn_locator.text_content() or "").strip()
         
         if target_token not in current_token:
-            logging.info(f"[{name}] 🔄 {log_context}: текущий='{current_token}', нужен='{target_token}'")
+            logging.info(f"[{name}] [RETRY] {log_context}: текущий='{current_token}', нужен='{target_token}'")
             await human_click(token_btn_locator, name, f"{log_context} selector")
             await human_pause(0.5, 1.5)
             dialog = page.get_by_role("dialog", name="Select a Token")
@@ -527,7 +527,7 @@ async def ensure_token_selected(page, name, token_btn_locator, target_token, log
             verified_token = (await token_btn_locator.text_content() or "").strip()
             if target_token not in verified_token:
                 logging.warning(
-                    f"[{name}] ⚠️ {log_context}: токен НЕ выбран! "
+                    f"[{name}] [WARN] {log_context}: токен НЕ выбран! "
                     f"Ожидался '{target_token}', выбран '{verified_token}'. "
                     f"Пробую ещё раз..."
                 )
@@ -541,22 +541,22 @@ async def ensure_token_selected(page, name, token_btn_locator, target_token, log
                 final_token = (await token_btn_locator.text_content() or "").strip()
                 if target_token not in final_token:
                     logging.error(
-                        f"[{name}] ❌ {log_context}: не удалось выбрать {target_token} "
+                        f"[{name}] [FAIL] {log_context}: не удалось выбрать {target_token} "
                         f"после 2 попыток (выбран '{final_token}')"
                     )
                     return False
                 else:
-                    logging.info(f"[{name}] ✅ {log_context}: {target_token} выбран со второй попытки")
+                    logging.info(f"[{name}] [OK] {log_context}: {target_token} выбран со второй попытки")
             else:
-                logging.info(f"[{name}] ✅ {log_context}: {target_token} успешно выбран")
+                logging.info(f"[{name}] [OK] {log_context}: {target_token} успешно выбран")
         else:
-            logging.info(f"[{name}] ℹ️ {target_token} уже выбран ({log_context})")
+            logging.info(f"[{name}] [INFO] {target_token} уже выбран ({log_context})")
         return True
     except TimeoutError:
-        logging.info(f"[{name}] ℹ️ Кнопка селектора '{log_context}' не найдена")
+        logging.info(f"[{name}] [INFO] Кнопка селектора '{log_context}' не найдена")
         return False
     except Exception as e:
-        logging.warning(f"[{name}] ⚠️ Ошибка выбора токена {target_token} ({log_context}): {e}")
+        logging.warning(f"[{name}] [WARN] Ошибка выбора токена {target_token} ({log_context}): {e}")
         return False
 
 
@@ -600,7 +600,7 @@ def plan_session(dai_balance: float) -> dict:
     liq_amount = max(LIQ_DAI_MIN, min(LIQ_DAI_MAX, liq_amount))
 
     logging.info(
-        f"📋 План сессии: пара DAI/{pair_token} | "
+        f"[PLAN] План сессии: пара DAI/{pair_token} | "
         f"свап={swap_amount} | лс={ls_amount} | ликв={liq_amount} DAI"
     )
 

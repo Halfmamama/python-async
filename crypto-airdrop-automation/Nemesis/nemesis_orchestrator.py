@@ -118,7 +118,7 @@ async def run_profile(playwright, name, cfg, semaphore, results):
         }
 
         try:
-            logging.info(f"[{name}] 🚀 start")
+            logging.info(f"[{name}] [START] start")
             wallet_addr = cfg.get("wallet_address")
             if not wallet_addr:
                 raise ValueError("wallet_address missing in config")
@@ -137,7 +137,7 @@ async def run_profile(playwright, name, cfg, semaphore, results):
             for attempt in range(1, MAX_RETRIES + 1):
                 try:
                     logging.info(
-                        f"[{name}] 🔄 Открытие {URL_APP} (попытка {attempt})"
+                        f"[{name}] [RETRY] Открытие {URL_APP} (попытка {attempt})"
                     )
                     await safe_open_with_retry(page, URL_APP, name)
                     await page.wait_for_load_state("networkidle")
@@ -163,7 +163,7 @@ async def run_profile(playwright, name, cfg, semaphore, results):
                         results[name]["swap_eth_dai"] = dai_balance is not None
                         await human_pause(3.0, 6.0)
                         if dai_balance is None:
-                            logging.warning(f"[{name}] ⚠️ ETH→DAI не удался, DAI=0, продолжаем...")
+                            logging.warning(f"[{name}] [WARN] ETH→DAI не удался, DAI=0, продолжаем...")
                             dai_balance = 0.0
                     else:
                         results[name]["swap_eth_dai"] = False  # не требуется
@@ -190,7 +190,7 @@ async def run_profile(playwright, name, cfg, semaphore, results):
                         results[name]["pair_token"] = plan["pair_token"]
                         results[name]["plan"] = plan
                         logging.info(
-                            f"[{name}] 📋 Сессия: DAI/{plan['pair_token']} | "
+                            f"[{name}] [PLAN] Сессия: DAI/{plan['pair_token']} | "
                             f"свап={plan['swap_amount']} | лс={plan['ls_amount']} | "
                             f"ликв={plan['liq_amount']} DAI"
                         )
@@ -241,7 +241,7 @@ async def run_profile(playwright, name, cfg, semaphore, results):
 
                         if not ls_result:
                             logging.warning(
-                                f"[{name}] ⚠️ Long/Short не удался, "
+                                f"[{name}] [WARN] Long/Short не удался, "
                                 f"перезагружаю страницу и продолжаю..."
                             )
                             try:
@@ -249,7 +249,7 @@ async def run_profile(playwright, name, cfg, semaphore, results):
                                 await page.wait_for_load_state("networkidle")
                                 await idle(3.0, 6.0)
                             except Exception as reload_err:
-                                logging.warning(f"[{name}] ⚠️ Ошибка при reload: {reload_err}")
+                                logging.warning(f"[{name}] [WARN] Ошибка при reload: {reload_err}")
                         else:
                             await human_pause(3.0, 6.0)
 
@@ -277,7 +277,7 @@ async def run_profile(playwright, name, cfg, semaphore, results):
 
                 except Exception as e:
                     logging.warning(
-                        f"[{name}] ⚠️ Ошибка на попытке {attempt}: {e}"
+                        f"[{name}] [WARN] Ошибка на попытке {attempt}: {e}"
                     )
                     if attempt == MAX_RETRIES:
                         raise
@@ -287,13 +287,13 @@ async def run_profile(playwright, name, cfg, semaphore, results):
         except ProxyConnectionError as e:
             results[name]["error"] = str(e)
             results[name]["proxy_suspect"] = True
-            logging.error(f"[{name}] ❌ Proxy connection failure: {e}")
+            logging.error(f"[{name}] [FAIL] Proxy connection failure: {e}")
             if page:
                 from core.failure import dump_failure
                 await dump_failure(page, name, "nemesis")
         except Exception as e:
             results[name]["error"] = str(e)
-            logging.error(f"[{name}] ❌ Nemesis failed: {e}")
+            logging.error(f"[{name}] [FAIL] Nemesis failed: {e}")
             if page:
                 from core.failure import dump_failure
                 await dump_failure(page, name, "nemesis")
@@ -313,7 +313,7 @@ async def main():
     profiles = select_profiles()
 
     if not profiles:
-        print("❌ No profiles to run")
+        print("[FAIL] No profiles to run")
         return
 
     scenario_display = SCENARIO if isinstance(SCENARIO, str) else "+".join(SCENARIO)
@@ -338,13 +338,13 @@ async def main():
     # ========= SUMMARY =========
     print("\n===== NEMESIS SUMMARY =====")
     for name, res in results.items():
-        wallet_ok = "✅" if res["wallet"] else "❌"
-        conn = "✅" if res["connected"] else "❌"
-        s1 = "✅" if res["swap_eth_dai"] else "❌"
-        s2 = "✅" if res["swap_dai_token"] else "❌"
+        wallet_ok = "[OK]" if res["wallet"] else "[FAIL]"
+        conn = "[OK]" if res["connected"] else "[FAIL]"
+        s1 = "[OK]" if res["swap_eth_dai"] else "[FAIL]"
+        s2 = "[OK]" if res["swap_dai_token"] else "[FAIL]"
         pair = res.get("pair_token", "—")
-        ls = "✅" if res["long_short"] else "❌"
-        liq = "✅" if res["liquidity"] else "❌"
+        ls = "[OK]" if res["long_short"] else "[FAIL]"
+        liq = "[OK]" if res["liquidity"] else "[FAIL]"
         err = f" | Error: {res['error']}" if res["error"] else ""
         plan = res.get("plan", {})
         plan_str = (

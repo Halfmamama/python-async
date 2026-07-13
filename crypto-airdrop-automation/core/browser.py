@@ -2,9 +2,8 @@ import os
 from pathlib import Path
 import config
 
-# Определяем корень проекта (Новая папка)
-# browser.py находится в Avtomatization/Multik/automation/core/
-# Значит: parent(core) -> parent(automation) -> parent(Multik) -> parent(Avtomatization) -> root
+# Определяем корень проекта
+# browser.py находится в crypto-airdrop-automation/core/
 BASE_DIR = Path(__file__).resolve().parent.parent
 PROFILES_DIR = os.path.join(str(BASE_DIR), "profiles")
 
@@ -38,7 +37,7 @@ def force_kill_chrome_by_profile(user_data_dir: str):
                     if low.startswith("--user-data-dir="):
                         val = arg.split("=", 1)[1]
                         if os.path.normpath(val).lower() == target:
-                            logging.warning(f"💥 [FORCED KILL] Убиваем зависший процесс Chrome {proc.info['pid']} для профиля {user_data_dir}")
+                            logging.warning(f"[FAIL] [FORCED KILL] Убиваем зависший процесс Chrome {proc.info['pid']} для профиля {user_data_dir}")
                             proc.kill()
                             break
         except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
@@ -56,7 +55,7 @@ async def launch_context(playwright, name, cfg, extra_args=None):
 
         context = await playwright.chromium.launch_persistent_context(
             user_data_dir=os.path.join(PROFILES_DIR, name),
-            channel="chromium",  # ✅ Chromium (поддерживает --load-extension)
+            channel="chromium",  # [OK] Chromium (поддерживает --load-extension)
             headless=False,
             proxy=cfg["proxy"],
             timezone_id=cfg["timezone"],
@@ -73,7 +72,7 @@ async def launch_context(playwright, name, cfg, extra_args=None):
                 "--disable-webrtc",
                 "--force-webrtc-ip-handling-policy=disable_non_proxied_udp",
                 "--webrtc-ip-handling-policy=disable_non_proxied_udp",
-                # ✅ Загружаем расширения (работает только в Chromium)
+                # [OK] Загружаем расширения (работает только в Chromium)
                 f"--disable-extensions-except={config.EXTENSION_PATH_MM},{config.EXTENSION_PATH_RW},{config.EXTENSION_PATH_PH},{config.EXTENSION_PATH_SUB}",
                 f"--load-extension={config.EXTENSION_PATH_MM},{config.EXTENSION_PATH_RW},{config.EXTENSION_PATH_PH},{config.EXTENSION_PATH_SUB}",
             ] + (extra_args or []),
@@ -89,7 +88,7 @@ async def launch_context(playwright, name, cfg, extra_args=None):
             try:
                 await asyncio.wait_for(original_close(*args, **kwargs), timeout=8.0)
             except asyncio.TimeoutError:
-                logging.warning(f"[{name}] ⚠️ context.close() завис по таймауту. Применяем принудительное закрытие процесса...")
+                logging.warning(f"[{name}] [WARN] context.close() завис по таймауту. Применяем принудительное закрытие процесса...")
                 try:
                     user_dir = os.path.join(PROFILES_DIR, name)
                     await asyncio.to_thread(force_kill_chrome_by_profile, user_dir)
@@ -164,7 +163,7 @@ async def launch_context_manual(
 
         context = await playwright.chromium.launch_persistent_context(
             user_data_dir=user_data_dir,
-            channel="chromium",  # ✅ Chromium (поддерживает --load-extension)
+            channel="chromium",  # [OK] Chromium (поддерживает --load-extension)
             headless=False,
             proxy=cfg["proxy"],
             timezone_id=cfg.get("timezone", "Europe/Berlin"),
@@ -184,7 +183,7 @@ async def launch_context_manual(
                 "--force-webrtc-ip-handling-policy=disable_non_proxied_udp",
                 "--webrtc-ip-handling-policy=disable_non_proxied_udp",
 
-                # ✅ Загружаем расширения (работает только в Chromium)
+                # [OK] Загружаем расширения (работает только в Chromium)
                 f"--disable-extensions-except={config.EXTENSION_PATH_MM},{config.EXTENSION_PATH_RW},{config.EXTENSION_PATH_PH},{config.EXTENSION_PATH_SUB}",
                 f"--load-extension={config.EXTENSION_PATH_MM},{config.EXTENSION_PATH_RW},{config.EXTENSION_PATH_PH},{config.EXTENSION_PATH_SUB}",
             ],
@@ -196,7 +195,7 @@ async def launch_context_manual(
             try:
                 await asyncio.wait_for(original_close(*args, **kwargs), timeout=8.0)
             except asyncio.TimeoutError:
-                logging.warning(f"[{profile_name}] ⚠️ context.close() завис по таймауту. Применяем принудительное закрытие процесса...")
+                logging.warning(f"[{profile_name}] [WARN] context.close() завис по таймауту. Применяем принудительное закрытие процесса...")
                 try:
                     user_dir = os.path.join(PROFILES_DIR, profile_name)
                     await asyncio.to_thread(force_kill_chrome_by_profile, user_dir)

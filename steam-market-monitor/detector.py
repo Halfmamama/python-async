@@ -178,7 +178,7 @@ def format_event(event: Dict[str, Any], search_name: str) -> str:
 
     if event_type == "new_item":
         return (
-            f"🆕 [{search_name_esc}] <b>{name}</b> — {price_str} "
+            f" [{search_name_esc}] <b>{name}</b> — {price_str} "
             f"(Кол-во: {new_count} шт.)"
             f"{link_line}"
         )
@@ -186,8 +186,8 @@ def format_event(event: Dict[str, Any], search_name: str) -> str:
         old_val = old_count if old_count is not None else 0
         diff_count = new_count - old_val
         return (
-            f"➕ [{search_name_esc}] <b>{name}</b> — {price_str} "
-            f"(Кол-во: {old_val} ➔ {new_count} (+{diff_count} шт.))"
+            f" [{search_name_esc}] <b>{name}</b> — {price_str} "
+            f"(Кол-во: {old_val}  {new_count} (+{diff_count} шт.))"
             f"{link_line}"
         )
     elif event_type == "price_drop":
@@ -195,7 +195,7 @@ def format_event(event: Dict[str, Any], search_name: str) -> str:
         diff_price = old_val - new_price
         diff_str = format_price_display(item, diff_price)
         return (
-            f"💸 [{search_name_esc}] <b>{name}</b> — {price_str} "
+            f" [{search_name_esc}] <b>{name}</b> — {price_str} "
             f"(Цена упала с {format_price_display(item, old_val)} на -{diff_str}) (Кол-во: {new_count} шт.)"
             f"{link_line}"
         )
